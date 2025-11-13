@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Section } from "../ui/Section";
 import { Card } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { Mail, MapPin, Phone, Github, Linkedin, Twitter, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const contactInfo = [
   {
@@ -34,6 +36,39 @@ const socialLinks = [
 ];
 
 export const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate form
+    if (!formData.name || !formData.email || !formData.message) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Simulate form submission (replace with actual API call if needed)
+    setTimeout(() => {
+      toast.success("Message sent successfully! I'll get back to you soon.");
+      setFormData({ name: "", email: "", message: "" });
+      setIsSubmitting(false);
+    }, 1000);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
   return (
     <Section
       id="contact"
@@ -45,7 +80,7 @@ export const Contact = () => {
         {/* Contact Form */}
         <Card gradient>
           <h3 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 leading-tight">Send me a message</h3>
-          <form className="space-y-5 md:space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
             <div>
               <label htmlFor="name" className="block text-xs md:text-sm font-medium text-neutral-300 mb-1.5 md:mb-2">
                 Name
@@ -53,8 +88,11 @@ export const Contact = () => {
               <input
                 type="text"
                 id="name"
+                value={formData.name}
+                onChange={handleChange}
                 className="w-full px-3 py-2 md:px-4 md:py-3 rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm md:text-base placeholder-neutral-500 focus:outline-none focus:border-purple-500 transition-colors"
                 placeholder="Your name"
+                required
               />
             </div>
             <div>
@@ -64,8 +102,11 @@ export const Contact = () => {
               <input
                 type="email"
                 id="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full px-3 py-2 md:px-4 md:py-3 rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm md:text-base placeholder-neutral-500 focus:outline-none focus:border-purple-500 transition-colors"
                 placeholder="your@email.com"
+                required
               />
             </div>
             <div>
@@ -75,14 +116,21 @@ export const Contact = () => {
               <textarea
                 id="message"
                 rows={4}
+                value={formData.message}
+                onChange={handleChange}
                 className="w-full px-3 py-2 md:px-4 md:py-3 rounded-lg bg-neutral-800 border border-neutral-700 text-white text-sm md:text-base placeholder-neutral-500 focus:outline-none focus:border-purple-500 transition-colors resize-none"
                 placeholder="Your message..."
+                required
               />
             </div>
-            <Button variant="primary" className="w-full !text-sm md:!text-base">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center justify-center bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <Send size={16} className="mr-2" />
-              Send Message
-            </Button>
+              {isSubmitting ? "Sending..." : "Send Message"}
+            </button>
           </form>
         </Card>
 
